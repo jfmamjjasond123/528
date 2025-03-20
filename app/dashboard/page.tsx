@@ -1,9 +1,12 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import CalendarWidget from '../components/CalendarWidget';
 import AnalyticsDashboard from '../components/analytics/AnalyticsDashboard';
 import TestTimeChartWrapper from '../components/analytics/TestTimeChartWrapper';
-import { BookOpen, Lightbulb, Brain, Layers, Timer, GraduationCap, ArrowRight } from 'lucide-react';
+import { BookOpen, Lightbulb, Brain, Layers, Timer, ArrowRight } from 'lucide-react';
+import { PageHeader, Card, Button, ProgressBar, CourseCardFull } from '../components/ui';
 
 // Mock data for MCAT CARS courses
 const mcatCourses = [
@@ -98,24 +101,22 @@ export default function Dashboard() {
       <main className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Welcome Section */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-              <div className="flex items-center">
-                <div className="p-3 bg-blue-100 rounded-lg mr-4 flex items-center justify-center">
-                  <span className="text-2xl" aria-hidden="true">👋</span>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Welcome back, John!</h1>
-                  <p className="text-gray-600">Continue your learning journey where you left off.</p>
-                </div>
-              </div>
-              <div className="mt-4 md:mt-0">
-                <Link href="/dashboard/question-bank" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg flex items-center transition-all shadow-sm">
-                  Create New Practice Exam <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
-              </div>
-            </div>
-          </div>
+          <PageHeader
+            title="Welcome back, John!"
+            description="Continue your learning journey where you left off."
+            icon={<span className="text-2xl" aria-hidden="true">👋</span>}
+            actions={
+              <Button
+                variant="primary"
+                size="lg"
+                icon={<ArrowRight />}
+                iconPosition="right"
+                onClick={() => window.location.href = "/dashboard/question-bank"}
+              >
+                Create New Practice Exam
+              </Button>
+            }
+          />
 
           {/* Your Progress Summary */}
           <div className="mb-8">
@@ -130,50 +131,32 @@ export default function Dashboard() {
           {/* Learning Progress and Calendar */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             {/* Learning Progress */}
-            <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6 h-full">
-              <h2 className="text-xl font-bold text-gray-900 mb-5">Your Learning Progress</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {mcatCourses.map((course) => (
-                  <div key={course.id} className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
-                    <div className={`h-2 ${getColorClass(course.color)}`}></div>
-                    <div className="p-4">
-                      <div className="flex items-center mb-2">
-                        <div className="p-2 bg-blue-100 rounded-lg mr-2">
-                          {course.icon}
-                        </div>
-                        <span className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                          {course.category}
-                        </span>
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-900">{course.title}</h3>
-                      <p className="text-gray-600 text-sm mt-1 mb-4">{course.description}</p>
-                      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                        <div 
-                          className={`h-2.5 rounded-full ${getColorClass(course.color)}`} 
-                          style={{ width: `${course.progress}%` }}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">
-                          {course.completedLessons}/{course.totalLessons} lessons • {course.estimatedTime}
-                        </span>
-                        <Link 
-                          href={`/dashboard/courses/${course.id}`} 
-                          className="text-sm font-medium text-khan-blue hover:text-khan-purple"
-                        >
-                          {course.progress === 100 ? 'Review' : 'Continue'}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="lg:col-span-2">
+              <Card padding="large">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Learning Progress</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {mcatCourses.map((course) => (
+                    <CourseCardFull
+                      key={course.id}
+                      id={course.id}
+                      title={course.title}
+                      progress={course.progress}
+                      completedLessons={course.completedLessons}
+                      totalLessons={course.totalLessons}
+                      hoursCount={parseInt(course.estimatedTime)}
+                      href={`/dashboard/courses/${course.id}`}
+                      icon={course.icon}
+                      color={course.color as 'blue' | 'green' | 'yellow' | 'purple'}
+                    />
+                  ))}
+                </div>
+              </Card>
             </div>
             
             {/* Calendar Widget */}
-            <div className="lg:col-span-1 h-full">
+            <Card className="lg:col-span-1 h-full p-0">
               <CalendarWidget />
-            </div>
+            </Card>
           </div>
         </div>
       </main>

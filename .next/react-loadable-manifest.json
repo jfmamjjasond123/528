@@ -1,1 +1,32 @@
-{}
+{
+  "app/(landing-page)/page.tsx -> @/app/components/landing/DetailedFeatures": {
+    "id": "app/(landing-page)/page.tsx -> @/app/components/landing/DetailedFeatures",
+    "files": [
+      "static/chunks/_app-pages-browser_app_components_landing_DetailedFeatures_tsx.js"
+    ]
+  },
+  "app/(landing-page)/page.tsx -> @/app/components/landing/FeatureCard": {
+    "id": "app/(landing-page)/page.tsx -> @/app/components/landing/FeatureCard",
+    "files": [
+      "static/chunks/_app-pages-browser_app_components_landing_FeatureCard_tsx.js"
+    ]
+  },
+  "app/(landing-page)/page.tsx -> @/app/components/landing/PricingGrid": {
+    "id": "app/(landing-page)/page.tsx -> @/app/components/landing/PricingGrid",
+    "files": [
+      "static/chunks/_app-pages-browser_app_components_landing_PricingGrid_tsx.js"
+    ]
+  },
+  "app/(landing-page)/page.tsx -> @/app/components/landing/StatsGrid": {
+    "id": "app/(landing-page)/page.tsx -> @/app/components/landing/StatsGrid",
+    "files": [
+      "static/chunks/_app-pages-browser_app_components_landing_StatsGrid_tsx.js"
+    ]
+  },
+  "app/(landing-page)/page.tsx -> @/app/components/landing/TestimonialGrid": {
+    "id": "app/(landing-page)/page.tsx -> @/app/components/landing/TestimonialGrid",
+    "files": [
+      "static/chunks/_app-pages-browser_app_components_landing_TestimonialGrid_tsx.js"
+    ]
+  }
+}
