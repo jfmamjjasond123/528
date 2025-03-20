@@ -1,0 +1,6 @@
+{
+  "/dashboard/calendar/page": "app/dashboard/calendar/page.js",
+  "/dashboard/course-contents/page": "app/dashboard/course-contents/page.js",
+  "/dashboard/course-contents/module/page": "app/dashboard/course-contents/module/page.js",
+  "/dashboard/course-contents/module/lesson/1/page": "app/dashboard/course-contents/module/lesson/1/page.js"
+}
