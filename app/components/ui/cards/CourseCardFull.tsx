@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { ProgressBar } from '../data-display/ProgressBar';
 
 export interface CourseCardFullProps {
   id: string | number;
@@ -38,35 +39,30 @@ export const CourseCardFull: React.FC<CourseCardFullProps> = ({
     blue: {
       border: 'border-blue-600',
       bg: 'bg-blue-50',
-      progressBg: 'bg-blue-600',
       iconBg: 'bg-blue-50',
       text: 'text-blue-600'
     },
     green: {
       border: 'border-green-500',
       bg: 'bg-green-50',
-      progressBg: 'bg-green-500',
       iconBg: 'bg-green-50',
       text: 'text-green-600'
     },
     purple: {
       border: 'border-purple-500',
       bg: 'bg-purple-50',
-      progressBg: 'bg-purple-600',
       iconBg: 'bg-purple-50',
       text: 'text-purple-600'
     },
     yellow: {
       border: 'border-yellow-500',
       bg: 'bg-yellow-50',
-      progressBg: 'bg-yellow-500',
       iconBg: 'bg-yellow-50',
       text: 'text-yellow-600'
     },
     red: {
       border: 'border-red-500',
       bg: 'bg-red-50',
-      progressBg: 'bg-red-500',
       iconBg: 'bg-red-50',
       text: 'text-red-600'
     },
@@ -74,6 +70,18 @@ export const CourseCardFull: React.FC<CourseCardFullProps> = ({
 
   const isCompleted = progress === 100;
   const colorClass = colorClasses[color];
+  
+  // Get progress bar color based on course color
+  const getProgressBarColor = () => {
+    switch(color) {
+      case 'blue': return 'blue';
+      case 'green': return 'green';
+      case 'purple': return 'purple';
+      case 'yellow': return 'yellow';
+      case 'red': return 'red';
+      default: return 'blue';
+    }
+  };
   
   return (
     <div className={`bg-white rounded-lg border-t-[6px] border-2 ${colorClass.border} shadow-sm hover:shadow-md transition-all duration-200`}>
@@ -92,15 +100,13 @@ export const CourseCardFull: React.FC<CourseCardFullProps> = ({
         </div>
         
         {/* Progress Bar */}
-        <div className="w-full h-2 bg-gray-200 rounded-full mb-3 overflow-hidden">
-          <div 
-            className={`h-full ${colorClass.progressBg} rounded-full transition-all duration-300 ease-in-out`} 
-            style={{ width: `${progress}%` }}
-            role="progressbar"
-            aria-valuenow={progress}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          ></div>
+        <div className="mb-3">
+          <ProgressBar 
+            value={progress}
+            height="sm"
+            color={getProgressBarColor()}
+            variant={isCompleted ? 'solid' : 'animated'}
+          />
         </div>
         
         {/* Lessons & Action */}

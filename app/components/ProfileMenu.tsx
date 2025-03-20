@@ -1,33 +1,48 @@
 'use client';
 
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, Transition } from '@headlessui/react';
-import { UserProfile } from './settings/types';
+import { User } from '../lib/stores/types';
+import { useUserStore } from '../lib/stores';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
 interface ProfileMenuProps {
-  user?: UserProfile;
+  user?: User;
 }
 
-const defaultUser: UserProfile = {
+const defaultUser: User = {
   id: '12345',
   name: 'John Doe',
   email: 'john.doe@example.com',
-  username: 'johndoe',
-  bio: 'Passionate learner',
   avatar: 'https://i.pravatar.cc/300',
-  joinDate: '2022-03-15',
-  role: 'student',
-  badges: [],
-  skills: []
+  role: 'student'
 };
 
-const ProfileMenu: React.FC<ProfileMenuProps> = ({ user = defaultUser }) => {
+const ProfileMenu: React.FC<ProfileMenuProps> = ({ user }) => {
+  const { user: currentUser, isLoading, fetchUser } = useUserStore();
+  
+  useEffect(() => {
+    if (!currentUser && !isLoading) {
+      fetchUser();
+    }
+  }, [currentUser, isLoading, fetchUser]);
+  
+  // Use the provided user prop, or the user from the store, or fallback to the default
+  const displayUser = user || currentUser || defaultUser;
+  
+  if (isLoading) {
+    return (
+      <div className="relative ml-3">
+        <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse"></div>
+      </div>
+    );
+  }
+  
   return (
     <Menu as="div" className="relative ml-3">
       <div>
@@ -36,8 +51,8 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user = defaultUser }) => {
           <span className="sr-only">Open user menu</span>
           <div className="h-8 w-8 rounded-full overflow-hidden">
             <Image
-              src={user.avatar}
-              alt={user.name}
+              src={displayUser.avatar || '/avatars/default.png'}
+              alt={displayUser.name}
               width={32}
               height={32}
               className="h-8 w-8 rounded-full"
@@ -56,8 +71,8 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ user = defaultUser }) => {
       >
         <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="px-4 py-3 border-b border-gray-100">
-            <p className="text-sm font-medium text-gray-900">{user.name}</p>
-            <p className="text-sm text-gray-600 truncate">{user.email}</p>
+            <p className="text-sm font-medium text-gray-900">{displayUser.name}</p>
+            <p className="text-sm text-gray-600 truncate">{displayUser.email}</p>
           </div>
           
           <Menu.Item>

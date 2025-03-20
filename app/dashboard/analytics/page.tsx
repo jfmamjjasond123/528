@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ChartPieIcon,
   ChartBarIcon,
@@ -20,124 +20,34 @@ import {
   Trophy as TrophyIcon, Users2 as Users2Icon,
   Target as TargetIcon, BookText as BookTextIcon, Lightbulb as LightbulbIcon
 } from 'lucide-react';
-
-// Mock data for MCAT CARS analytics
-const performanceData = [
-  { name: 'Jan', score: 68, avgTime: 10.2 },
-  { name: 'Feb', score: 72, avgTime: 9.8 },
-  { name: 'Mar', score: 75, avgTime: 9.5 },
-  { name: 'Apr', score: 79, avgTime: 9.0 },
-  { name: 'May', score: 82, avgTime: 8.5 },
-  { name: 'Jun', score: 85, avgTime: 8.2 },
-  { name: 'Jul', score: 87, avgTime: 7.8 },
-  { name: 'Aug', score: 90, avgTime: 7.5 }
-];
-
-// Mock data for Full Length Scores
-const fullLengthScoresData = [
-  { name: 'FL 1', chem: 129, cars: 128, bio: 130, psych: 131 },
-  { name: 'FL 2', chem: 130, cars: 129, bio: 130, psych: 130 },
-  { name: 'FL 3', chem: 131, cars: 130, bio: 131, psych: 132 },
-  { name: 'FL 4', chem: 131, cars: 131, bio: 132, psych: 131 },
-  { name: 'FL 5', chem: 132, cars: 130, bio: 131, psych: 132 }
-];
-
-// Mock data for Distractor Analysis
-const distractorAnalysisData = [
-  { date: 'Jan 1', correctAnswer: 50, closeDistractor: 30, unrelatedDistractor: 15, oppositeDistractor: 5 },
-  { date: 'Jan 15', correctAnswer: 55, closeDistractor: 28, unrelatedDistractor: 12, oppositeDistractor: 5 },
-  { date: 'Feb 1', correctAnswer: 60, closeDistractor: 25, unrelatedDistractor: 10, oppositeDistractor: 5 },
-  { date: 'Feb 15', correctAnswer: 65, closeDistractor: 20, unrelatedDistractor: 10, oppositeDistractor: 5 },
-  { date: 'Mar 1', correctAnswer: 70, closeDistractor: 18, unrelatedDistractor: 8, oppositeDistractor: 4 },
-  { date: 'Mar 15', correctAnswer: 75, closeDistractor: 15, unrelatedDistractor: 7, oppositeDistractor: 3 },
-  { date: 'Apr 1', correctAnswer: 80, closeDistractor: 12, unrelatedDistractor: 5, oppositeDistractor: 3 }
-];
-
-// Mock data for Subject performance
-const subjectPerformanceData = [
-  { date: 'Jan', humanities: 72, socialSciences: 68, naturalSciences: 75, philosophy: 62 },
-  { date: 'Feb', humanities: 74, socialSciences: 70, naturalSciences: 78, philosophy: 65 },
-  { date: 'Mar', humanities: 78, socialSciences: 75, naturalSciences: 82, philosophy: 70 },
-  { date: 'Apr', humanities: 83, socialSciences: 79, naturalSciences: 85, philosophy: 76 },
-  { date: 'May', humanities: 86, socialSciences: 83, naturalSciences: 88, philosophy: 80 },
-  { date: 'Jun', humanities: 90, socialSciences: 87, naturalSciences: 92, philosophy: 85 }
-];
-
-// Mock data for MCAT CARS Skills
-const skillsData = [
-  { month: 'Jan', criticalAnalysis: 70, readingComprehension: 65 },
-  { month: 'Feb', criticalAnalysis: 72, readingComprehension: 69 },
-  { month: 'Mar', criticalAnalysis: 75, readingComprehension: 74 },
-  { month: 'Apr', criticalAnalysis: 78, readingComprehension: 80 },
-  { month: 'May', criticalAnalysis: 83, readingComprehension: 84 },
-  { month: 'Jun', criticalAnalysis: 87, readingComprehension: 89 }
-];
-
-const passageTypePerformanceData = [
-  { name: 'Humanities', score: 85 },
-  { name: 'Social Sciences', score: 78 },
-  { name: 'Natural Sciences', score: 92 },
-  { name: 'Philosophy', score: 76 },
-  { name: 'Ethics', score: 88 }
-];
-
-const questionTypeData = [
-  { name: 'Main Idea', value: 88 },
-  { name: 'Detail', value: 75 },
-  { name: 'Inference', value: 65 },
-  { name: 'Reasoning', value: 82 },
-  { name: 'Application', value: 70 }
-];
+import { useCarsAnalyticsStore } from '../../lib/stores';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
-const studyTimeData = [
-  { name: 'Reading', value: 35 },
-  { name: 'Practice Questions', value: 40 },
-  { name: 'Review', value: 15 },
-  { name: 'Full Passages', value: 10 }
-];
-
-const practiceSessionsData = [
-  { date: 'Week 1', sessions: 3, avgScore: 65 },
-  { date: 'Week 2', sessions: 4, avgScore: 68 },
-  { date: 'Week 3', sessions: 5, avgScore: 72 },
-  { date: 'Week 4', sessions: 4, avgScore: 75 },
-  { date: 'Week 5', sessions: 6, avgScore: 78 },
-  { date: 'Week 6', sessions: 7, avgScore: 82 },
-  { date: 'Week 7', sessions: 8, avgScore: 85 },
-  { date: 'Week 8', sessions: 7, avgScore: 88 }
-];
-
-const skillsRadarData = [
-  { subject: 'Reading Speed', A: 85, fullMark: 100 },
-  { subject: 'Comprehension', A: 80, fullMark: 100 },
-  { subject: 'Critical Analysis', A: 70, fullMark: 100 },
-  { subject: 'Reasoning', A: 75, fullMark: 100 },
-  { subject: 'Inference', A: 65, fullMark: 100 },
-  { subject: 'Application', A: 72, fullMark: 100 },
-];
-
-const passageCompletionData = [
-  { name: 'Passage 1', completion: 95, avgTime: 8.5 },
-  { name: 'Passage 2', completion: 88, avgTime: 9.2 },
-  { name: 'Passage 3', completion: 76, avgTime: 10.1 },
-  { name: 'Passage 4', completion: 65, avgTime: 10.8 },
-  { name: 'Passage 5', completion: 58, avgTime: 11.5 }
-];
-
-// Add question bank usage data
-const questionBankData = {
-  correctQuestions: 455,
-  incorrectAnswers: 67,
-  incompleteQuestions: 55,
-  seenQuestions: 455,
-  unseenQuestions: 67,
-  totalQuestions: 55,
-  totalPossibleQuestions: 500
-};
-
 export default function AnalyticsPage() {
+  // Use CARS analytics store
+  const { 
+    performanceData,
+    fullLengthScoresData,
+    distractorAnalysisData,
+    subjectPerformanceData,
+    skillsData,
+    passageTypePerformanceData,
+    questionTypeData,
+    studyTimeData,
+    practiceSessionsData,
+    skillsRadarData,
+    passageCompletionData,
+    questionBankData,
+    selectedTimeRange,
+    isLoading,
+    error,
+    fetchCarsAnalytics,
+    setSelectedTimeRange,
+    clearError
+  } = useCarsAnalyticsStore();
+  
+  // Local UI state
   const [timeRange, setTimeRange] = useState('3m');
   
   // State for subject chart toggle controls
@@ -148,12 +58,31 @@ export default function AnalyticsPage() {
     philosophy: true
   });
   
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchCarsAnalytics();
+  }, [fetchCarsAnalytics]);
+  
   // Toggle visibility of a subject
   const toggleSubjectVisibility = (subject: keyof typeof subjectVisibility) => {
     setSubjectVisibility({
       ...subjectVisibility,
       [subject]: !subjectVisibility[subject]
     });
+  };
+  
+  // Handle time range changes
+  const handleTimeRangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setTimeRange(value);
+    
+    // Map UI time range to store time range
+    const storeTimeRange = 
+      value === '1w' ? 'week' :
+      value === '3m' ? 'month' :
+      value === '1y' ? 'year' : 'all';
+    
+    setSelectedTimeRange(storeTimeRange);
   };
   
   // Stats cards data
@@ -180,6 +109,89 @@ export default function AnalyticsPage() {
     }
   ];
   
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-khan-background">
+        <main className="py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+              <div className="flex items-center">
+                <div className="p-3 bg-blue-100 rounded-lg mr-4">
+                  <ChartBarIcon className="w-7 h-7 text-blue-700" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">MCAT CARS Analytics</h1>
+                  <p className="text-gray-600">Loading your analytics data...</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Loading skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="bg-white rounded-lg shadow-sm p-6">
+                  <div className="animate-pulse flex items-center">
+                    <div className="rounded-lg h-10 w-10 bg-gray-200 mr-3"></div>
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {[1, 2].map((i) => (
+                <div key={i} className="bg-white rounded-lg shadow-sm p-6 min-h-64">
+                  <div className="animate-pulse">
+                    <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+                    <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+  
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-khan-background">
+        <main className="py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+              <div className="flex items-center">
+                <div className="p-3 bg-red-100 rounded-lg mr-4">
+                  <span className="text-red-600 text-xl">⚠️</span>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Error Loading Analytics</h1>
+                  <p className="text-gray-600">{error}</p>
+                </div>
+              </div>
+              <div className="mt-4">
+                <button 
+                  onClick={() => {
+                    clearError();
+                    fetchCarsAnalytics();
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+  
   return (
     <div className="min-h-screen bg-khan-background">
       <main className="py-6">
@@ -195,6 +207,20 @@ export default function AnalyticsPage() {
                   <h1 className="text-2xl font-bold text-gray-900">MCAT CARS Analytics</h1>
                   <p className="text-gray-600">Track your CARS performance and identify areas for improvement</p>
                 </div>
+              </div>
+              
+              {/* Time range selector */}
+              <div className="mt-4 md:mt-0">
+                <select
+                  value={timeRange}
+                  onChange={handleTimeRangeChange}
+                  className="bg-white border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="1w">Last Week</option>
+                  <option value="3m">Last 3 Months</option>
+                  <option value="1y">Last Year</option>
+                  <option value="all">All Time</option>
+                </select>
               </div>
             </div>
           </div>
@@ -244,7 +270,11 @@ export default function AnalyticsPage() {
                     </svg>
                   </div>
                   <div className="text-center">
-                    <div className="text-5xl font-bold mb-1">50%</div>
+                    <div className="text-5xl font-bold mb-1">
+                      {questionBankData ? 
+                        Math.round((questionBankData.correctQuestions / (questionBankData.correctQuestions + questionBankData.incorrectAnswers)) * 100) + '%' 
+                        : '0%'}
+                    </div>
                     <p className="text-gray-600 text-sm">Accurate</p>
                   </div>
                 </div>

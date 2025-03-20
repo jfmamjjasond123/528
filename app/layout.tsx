@@ -2,12 +2,13 @@ import React from 'react';
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { StoreProvider } from './lib/stores';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Khan Academy Clone',
-  description: 'A clone of Khan Academy with learning dashboard and admin panel',
+  title: 'MCAT Prep Platform',
+  description: 'A comprehensive platform for MCAT preparation, featuring content, practice tests, and analysis.',
 };
 
 export default function RootLayout({
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
+        <StoreProvider>
+          {children}
+        </StoreProvider>
       </body>
     </html>
   );

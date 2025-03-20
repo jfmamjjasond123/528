@@ -1,108 +1,48 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import CalendarWidget from '../components/CalendarWidget';
 import AnalyticsDashboard from '../components/analytics/AnalyticsDashboard';
 import TestTimeChartWrapper from '../components/analytics/TestTimeChartWrapper';
 import { BookOpen, Lightbulb, Brain, Layers, Timer, ArrowRight } from 'lucide-react';
-import { PageHeader, Card, Button, ProgressBar, CourseCardFull } from '../components/ui';
-
-// Mock data for MCAT CARS courses
-const mcatCourses = [
-  {
-    id: 1,
-    title: 'Foundations of CARS Analysis',
-    description: 'Learn to identify key elements and structures in complex passages',
-    progress: 100,
-    icon: <Lightbulb className="w-5 h-5" />,
-    completedLessons: 5,
-    totalLessons: 5,
-    estimatedTime: '3 hours',
-    category: 'MCAT CARS',
-    color: 'blue',
-  },
-  {
-    id: 2,
-    title: 'Advanced Reading Strategies',
-    description: 'Master efficient reading techniques for complex humanities passages',
-    progress: 60,
-    icon: <Brain className="w-5 h-5" />,
-    completedLessons: 3,
-    totalLessons: 5,
-    estimatedTime: '4 hours',
-    category: 'MCAT CARS',
-    color: 'green',
-  },
-  {
-    id: 3,
-    title: 'Question Type Analysis',
-    description: 'Understand the different question types and strategies for each',
-    progress: 0,
-    icon: <Layers className="w-5 h-5" />,
-    completedLessons: 0,
-    totalLessons: 6,
-    estimatedTime: '4.5 hours',
-    category: 'MCAT CARS',
-    color: 'purple',
-  },
-  {
-    id: 4,
-    title: 'Timing and Efficiency',
-    description: 'Develop strategies to maximize your score within time constraints',
-    progress: 0,
-    icon: <Timer className="w-5 h-5" />,
-    completedLessons: 0,
-    totalLessons: 5,
-    estimatedTime: '3.5 hours',
-    category: 'MCAT CARS',
-    color: 'yellow',
-  },
-];
-
-// Enhanced mock data for test times with more data points
-const testTimeData = [
-  { date: '2023-12-15', testTime: 12.2 },
-  { date: '2023-12-22', testTime: 11.5 },
-  { date: '2023-12-29', testTime: 10.8 },
-  { date: '2024-01-03', testTime: 10.5 },
-  { date: '2024-01-09', testTime: 7.9 },
-  { date: '2024-01-15', testTime: 6.5 },
-  { date: '2024-01-20', testTime: 5.7, examScore: '505/600', isSelected: true },
-  { date: '2024-01-25', testTime: 3.8 },
-  { date: '2024-01-27', testTime: 3.1 },
-  { date: '2024-01-29', testTime: 2.4 },
-  { date: '2024-01-31', testTime: 2.1 },
-  { date: '2024-02-05', testTime: 1.9 },
-  { date: '2024-02-12', testTime: 1.7 },
-  { date: '2024-02-19', testTime: 1.5 },
-  { date: '2024-02-26', testTime: 1.3 }
-];
-
-// Get color class based on course color
-const getColorClass = (color: string) => {
-  switch (color) {
-    case 'blue':
-      return 'bg-khan-blue';
-    case 'green':
-      return 'bg-khan-green';
-    case 'purple':
-      return 'bg-khan-purple';
-    case 'yellow':
-      return 'bg-yellow-500';
-    default:
-      return 'bg-khan-blue';
-  }
-};
+import { PageHeader, Card, Button, ProgressBar } from '../components/ui';
+import { CourseCardFull } from '../components/ui/cards/CourseCardFull';
+import { useCourseStore, useUserStore, useAnalyticsStore, useTestTimeStore } from '../lib/stores';
 
 export default function Dashboard() {
+  // Use our stores instead of local state
+  const { courses, fetchCourses, isLoading: coursesLoading } = useCourseStore();
+  const { user, fetchUser, isLoading: userLoading } = useUserStore();
+  const { fetchAnalytics } = useAnalyticsStore();
+  const { fetchTestTimeData } = useTestTimeStore();
+  
+  // Fetch data when component mounts
+  useEffect(() => {
+    fetchCourses();
+    fetchUser();
+    fetchAnalytics();
+    fetchTestTimeData();
+  }, [fetchCourses, fetchUser, fetchAnalytics, fetchTestTimeData]);
+  
+  // Loading state
+  if (coursesLoading || userLoading) {
+    return (
+      <div className="min-h-screen bg-khan-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-xl text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-khan-background">
       <main className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Welcome Section */}
           <PageHeader
-            title="Welcome back, John!"
+            title={`Welcome back, ${user?.name || 'Student'}!`}
             description="Continue your learning journey where you left off."
             icon={<span className="text-2xl" aria-hidden="true">👋</span>}
             actions={
@@ -125,7 +65,7 @@ export default function Dashboard() {
           
           {/* Test Time Analysis */}
           <div className="mb-8">
-            <TestTimeChartWrapper data={testTimeData} />
+            <TestTimeChartWrapper />
           </div>
 
           {/* Learning Progress and Calendar */}
@@ -135,7 +75,7 @@ export default function Dashboard() {
               <Card padding="large">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Learning Progress</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {mcatCourses.map((course) => (
+                  {courses.map((course) => (
                     <CourseCardFull
                       key={course.id}
                       id={course.id}
@@ -143,7 +83,7 @@ export default function Dashboard() {
                       progress={course.progress}
                       completedLessons={course.completedLessons}
                       totalLessons={course.totalLessons}
-                      hoursCount={parseInt(course.estimatedTime)}
+                      hoursCount={parseInt(course.estimatedTime || '0')}
                       href={`/dashboard/courses/${course.id}`}
                       icon={course.icon}
                       color={course.color as 'blue' | 'green' | 'yellow' | 'purple'}
